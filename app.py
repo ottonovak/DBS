@@ -29,7 +29,9 @@ def dbs():
 
     pointer.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size;")
     size = pointer.fetchone()
+    return size[0]
 
+"""
     response = {}
     response2 = {}
 
@@ -39,7 +41,7 @@ def dbs():
 
     final_response = json.dumps(response)
     return final_response
-
+"""
 
 
 
