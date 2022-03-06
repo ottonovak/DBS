@@ -1,9 +1,10 @@
-import json
+
 from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
-
 import psycopg2 as psy
 from dotenv import dotenv_values
+import json
+
 
 
 @app.route('/')
@@ -13,37 +14,31 @@ def index():
 
 
 @app.route('/v1/health', methods=['GET'])
-def dbs():
+def do_stuff():
+    print('Request for index page received')
     var = dotenv_values("/home/en_var.env")
-    print('Request received from dbs()')
 
     conn = psy.connect(
-        host="147.175.150.216",
-        database="dota2",
-        port=5432,
-        user=var['DBUSER'],
-        password=var['DBSPASS'])
+       host="147.175.150.216",
+       database="dota2",
+       user=var['DBUSER'],
+       password=var['DBSPASS'])
 
-    pointer = conn.cursor()
-    #pointer.execute("SELECT VERSION();")
-    #version = pointer.fetchone()
+    cur = conn.cursor()
+    cur.execute("SELECT VERSION()")
+    fetched_version = cur.fetchone()
 
-    pointer.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size")
-    size_s = pointer.fetchone()
-    return size_s[0]
+    cur.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size")
+    fetched_size = cur.fetchone()
 
-"""
-    response = {}
-    response2 = {}
+    dic = {}
+    dic2 = {}
+    dic2['pgsql'] = dic
+    dic["dota2_db_size"] = fetched_size[0]
+    dic['version'] = fetched_version[0]
 
-    response2["version"] = version[0]
-    response2["dota2_db_size"] = size[0]
-    response["pgsql"] = response2
-
-    final_response = json.dumps(response)
-    return final_response
-"""
-
+    json_string = json.dumps(dic2)
+    return json_string
 
 
 @app.route('/hello', methods=['POST'])
