@@ -27,9 +27,9 @@ def dbs():
     pointer.execute("SELECT VERSION();")
     version = pointer.fetchone()
 
-    pointer.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size;")
-    size = pointer.fetchone()
-    return size[0]
+    #pointer.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size;")
+    #size = pointer.fetchone()
+    return version[0]
 
 """
     response = {}
