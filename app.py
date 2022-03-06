@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 
 import psycopg2
+import dotenv
 
 
 @app.route('/')
@@ -12,6 +13,13 @@ def index():
 
 @app.route('/v1/health/', methods=['GET'])
 def dbs():
+    var = dotenv_load("/home/en_var.env")
+    conn = psycopg2.connect(
+    host="147.175.150.216",
+    database="dota2",
+    user=var['DBUDER'],
+    password=var['DBPASS'])
+
    print('Request received from dbs()')
    return 'dbs() returned something'
 
