@@ -21,7 +21,7 @@ def dbs():
         host="147.175.150.216",
         database="dota2",
         user=var['DBUSER'],
-        password=var['DBPASS'])
+        password=var['DBSPASS'])
 
     pointer = conn.cursor()
     pointer.execute("SELECT VERSION();")
