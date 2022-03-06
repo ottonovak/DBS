@@ -20,8 +20,8 @@ def dbs():
         user=var['DBUSER'],
         password=var['DBPASS'])
 
-   print('Request received from dbs()')
-   return "bdskoo"
+    print('Request received from dbs()')
+    return "bdskoo"
 
 
 @app.route('/hello', methods=['POST'])
