@@ -24,12 +24,12 @@ def dbs():
         password=var['DBSPASS'])
 
     pointer = conn.cursor()
-    pointer.execute("SELECT VERSION();")
-    version = pointer.fetchone()
+    #pointer.execute("SELECT VERSION();")
+    #version = pointer.fetchone()
 
     pointer.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size")
-    size = pointer.fetchone()
-    return size[0]
+    size_s = pointer.fetchone()
+    return size_s[0]
 
 """
     response = {}
