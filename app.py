@@ -15,7 +15,7 @@ def index():
 def dbs():
     var = dotenv_values("/home/en_var.env")
     print('Request received from dbs()')
-    """
+
     conn = psycopg2.connect(
         host="147.175.150.216",
         database="dota2",
@@ -24,11 +24,13 @@ def dbs():
 
     pointer = conn.cursor()
     pointer.execute("SELECT VERSION()")
-    node = pointer.fetchnode()
+    version = pointer.fetchnode()
 
-    return node
-    """
-    return "daaa"
+    pointer.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size;")
+    size = pointer.fetchnode()
+
+
+    return "{\n\t"pgsql": {\n\t\t"version[0]": "" + version[0] + "",\n\t"size[0]": " + str(dota_2_db_size[0]) + "\n\t}\n}"
 
 
 @app.route('/hello', methods=['POST'])
