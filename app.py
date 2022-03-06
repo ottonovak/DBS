@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
@@ -29,8 +30,15 @@ def dbs():
     pointer.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size;")
     size = pointer.fetchnode()
 
+    response = {}
+    response2 = {}
+    response2["pgsql"] = response
+    response["dota2_db_size"] = size[0]
+    response["version"] = version[0]
 
-    return "{\n\t"pgsql": {\n\t\t"version[0]": "" + version[0] + "",\n\t"size[0]": " + str(dota_2_db_size[0]) + "\n\t}\n}"
+    final_response = json.dump(response2)
+
+    return final_response
 
 
 @app.route('/hello', methods=['POST'])
