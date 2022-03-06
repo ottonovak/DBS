@@ -20,8 +20,13 @@ def dbs():
         user=var['DBUSER'],
         password=var['DBPASS'])
 
+    pointer = conn.cursor()
+    pointer.execute("SELECT VERSION()")
+    node = pointer.fetchnode()
+
+
     print('Request received from dbs()')
-    return "bdskoo"
+    return node
 
 
 @app.route('/hello', methods=['POST'])
