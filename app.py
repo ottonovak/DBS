@@ -13,7 +13,7 @@ def index():
 
 @app.route('/v1/health/', methods=['GET'])
 def dbs():
-    var = dotenv_load("/home/en_var.env")
+    var = dotenv_values("/home/en_var.env")
     conn = psycopg2.connect(
         host="147.175.150.216",
         database="dota2",
