@@ -17,7 +17,7 @@ def dbs():
     conn = psycopg2.connect(
         host="147.175.150.216",
         database="dota2",
-        user=var['DBUDER'],
+        user=var['DBUSER'],
         password=var['DBPASS'])
 
    print('Request received from dbs()')
