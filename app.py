@@ -35,7 +35,7 @@ def dbs():
 
     response2["version"] = version[0]
     response2["dota2_db_size"] = size[0]
-    response["pgsql"] = response
+    response["pgsql"] = response2
 
     final_response = json.dumps(response)
     return final_response
