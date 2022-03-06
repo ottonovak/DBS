@@ -20,6 +20,7 @@ def dbs():
     conn = psy.connect(
         host="147.175.150.216",
         database="dota2",
+        port=5432,
         user=var['DBUSER'],
         password=var['DBSPASS'])
 
