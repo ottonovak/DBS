@@ -15,10 +15,10 @@ def index():
 def dbs():
     var = dotenv_load("/home/en_var.env")
     conn = psycopg2.connect(
-    host="147.175.150.216",
-    database="dota2",
-    user=var['DBUDER'],
-    password=var['DBPASS'])
+        host="147.175.150.216",
+        database="dota2",
+        user=var['DBUDER'],
+        password=var['DBPASS'])
 
    print('Request received from dbs()')
    return 'dbs() returned something'
