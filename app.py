@@ -12,7 +12,7 @@ def index():
    return render_template('index.html')
 
 
-@app.route('/v1/health/', methods=['GET'])
+@app.route('/v1/health', methods=['GET'])
 def dbs():
     var = dotenv_values("/home/en_var.env")
     print('Request received from dbs()')
