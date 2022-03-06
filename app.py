@@ -1,16 +1,15 @@
-
 from flask import Flask, render_template, request, redirect, url_for
-app = Flask(__name__)
 import psycopg2 as psy
 from dotenv import dotenv_values
 import json
-
+app = Flask(__name__)
 
 
 @app.route('/')
 def index():
    print('Request for index page received')
    return render_template('index.html')
+
 
 
 @app.route('/v1/health', methods=['GET'])
@@ -24,21 +23,24 @@ def do_stuff():
        user=var['DBUSER'],
        password=var['DBSPASS'])
 
-    cur = conn.cursor()
-    cur.execute("SELECT VERSION()")
-    fetched_version = cur.fetchone()
+    pointer = conn.cursor()
+    pointer.execute("SELECT VERSION()")
+    version = pointer.fetchone()
 
-    cur.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size")
-    fetched_size = cur.fetchone()
+    pointer.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size")
+    size = pointer.fetchone()
 
-    dic = {}
-    dic2 = {}
-    dic2['pgsql'] = dic
-    dic["dota2_db_size"] = fetched_size[0]
-    dic['version'] = fetched_version[0]
 
-    json_string = json.dumps(dic2)
-    return json_string
+    response = {}
+    response2 = {}
+    response2['pgsql'] = response
+    response["dota2_db_size"] = size[0]
+    response['version'] = version[0]
+
+
+    final_response = json.dumps(response2)
+    return final_response
+
 
 
 @app.route('/hello', methods=['POST'])
