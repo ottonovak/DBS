@@ -21,7 +21,7 @@ def dbs():
         password=var['DBPASS'])
 
    print('Request received from dbs()')
-   return 'dbs() returned something'
+   return "bdskoo"
 
 
 @app.route('/hello', methods=['POST'])
