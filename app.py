@@ -12,6 +12,7 @@ def index():
    print('Request for index page received')
    return render_template('index.html')
 
+
 @app.route('/v1/health/', methods=['GET'])
 def dbs():
     var = dotenv_values("/home/en_var.env")
@@ -24,7 +25,7 @@ def dbs():
         password=var['DBPASS'])
 
     pointer = conn.cursor()
-    pointer.execute("SELECT VERSION()")
+    pointer.execute("SELECT VERSION();")
     version = pointer.fetchnode()
 
     pointer.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size;")
@@ -37,7 +38,6 @@ def dbs():
     response["version"] = version[0]
 
     final_response = json.dumps(response2)
-
     return final_response
 
 
