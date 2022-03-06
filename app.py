@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 
@@ -33,13 +32,15 @@ def dbs():
 
     response = {}
     response2 = {}
-    response2["pgsql"] = response
-    response["version"] = version[0]
-    response["dota2_db_size"] = size[0]
 
+    response2["version"] = version[0]
+    response2["dota2_db_size"] = size[0]
+    response["pgsql"] = response
 
-    final_response = json.dumps(response2)
+    final_response = json.dumps(response)
     return final_response
+
+
 
 
 @app.route('/hello', methods=['POST'])
