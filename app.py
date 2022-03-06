@@ -14,6 +14,8 @@ def index():
 @app.route('/v1/health/', methods=['GET'])
 def dbs():
     var = dotenv_values("/home/en_var.env")
+    print('Request received from dbs()')
+    """
     conn = psycopg2.connect(
         host="147.175.150.216",
         database="dota2",
@@ -24,9 +26,9 @@ def dbs():
     pointer.execute("SELECT VERSION()")
     node = pointer.fetchnode()
 
-
-    print('Request received from dbs()')
     return node
+    """
+    return "daaa"
 
 
 @app.route('/hello', methods=['POST'])
