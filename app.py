@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 
 import psycopg2
-import dotenv
+from dotenv import dotenv_values
 
 
 @app.route('/')
