@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 import psycopg2 as psy
 from dotenv import dotenv_values
 import json
+import os
 app = Flask(__name__)
 
 
@@ -11,17 +12,34 @@ def index():
    return render_template('index.html')
 
 
+def win_establish_connection():
+    conn = psy.connect(
+       host="147.175.150.216",
+       database="dota2",
+       user=os.getenv('DBUSER'),
+       password=os.getenv('DBSPASS'))
+    return conn
 
-@app.route('/v1/health', methods=['GET'])
-def do_stuff():
-    print('Request for index page received')
+
+def lin_establish_connection():
     var = dotenv_values("/home/en_var.env")
-
     conn = psy.connect(
        host="147.175.150.216",
        database="dota2",
        user=var['DBUSER'],
        password=var['DBSPASS'])
+    return conn
+
+
+@app.route('/v1/health', methods=['GET'])
+def do_stuff():
+    print('Request for index page received')
+
+    if os.name == "nt":     # vrati nt pre widnows a posix pre linux a mac
+        conn = win_establish_connection()
+    else:
+        conn = lin_establish_connection()
+
 
     pointer = conn.cursor()
     pointer.execute("SELECT VERSION()")
