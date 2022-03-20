@@ -56,6 +56,7 @@ def v1_health():
     response['version'] = version[0]
 
     final_response = json.dumps(response2)
+    pointer.close()
     return final_response
 
 
@@ -108,7 +109,7 @@ def v2_patches():
                 current_patch['matches'].append(match)
 
             response['patches'].append(current_patch)
-
+    pointer.close()
     return json.dumps(response)
 
 
@@ -140,22 +141,23 @@ def v2_game_exp(id):
                     "on mpd.hero_id = h.id "
                     "JOIN matches as m "
                     "on mpd.match_id = m.id "
-                    "WHERE p.id =" + id +
+                    "WHERE p.id = " + id +
                     " ORDER BY m.id")
 
-    final_response = pointer.fetchone()
-    return final_response
+    matches = []
+    for row in pointer:
+        matchess = {}
+        matchess['match_id'] = row[2]
+        matchess['hero_localized_name'] = row[3]
+        matchess['match_duration_minutes'] = float(row[4])
+        matchess['experiences_gained'] = row[5]
+        matchess['level_gained'] = row[6]
+        matchess['winner'] = row[7]
+        matches.append(matchess)
 
-"""
-
-ak SQL vrati tabulku, treba pouzit
-
-for row in pointer:
-    print("Riadok: " + row[0] + " | " + row[1]...)
-
-"""
-
-
+    player_dic['matches'] = matches
+    pointer.close()
+    return json.dumps(player_dic)
 
 
 @app.route('/hello', methods=['POST'])
