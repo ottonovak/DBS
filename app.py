@@ -113,6 +113,7 @@ def v2_patches():
     return json.dumps(response)
 
 
+
 @app.route('/v2/players/<string:id>/game_exp/', methods=['GET'])
 def v2_game_exp(id):
     conn = establish_connection()
@@ -125,7 +126,8 @@ def v2_game_exp(id):
     player_dic['id'] = int(id)
     player_dic['player_nick'] = pointer.fetchone()[0]
 
-    pointer.execute("SELECT p.id, "
+    pointer.execute(
+                    "SELECT p.id, "
                     "COALESCE(p.nick,'unknown') AS player_nick, "
                     "match_id, "
                     "localized_name AS hero_localized_name, "
@@ -142,7 +144,8 @@ def v2_game_exp(id):
                     "JOIN matches as m "
                     "on mpd.match_id = m.id "
                     "WHERE p.id = " + id +
-                    " ORDER BY m.id")
+                    " ORDER BY m.id"
+                    )
 
     matches = []
     for row in pointer:
@@ -158,6 +161,108 @@ def v2_game_exp(id):
     player_dic['matches'] = matches
     pointer.close()
     return json.dumps(player_dic)
+
+
+
+@app.route('/v2/players/<string:id>/game_objectives/', methods=['GET'])
+def v2_game_objectives(id):
+    conn = establish_connection()
+    pointer = conn.cursor()
+
+    pointer.execute("SELECT pl.id, pl.nick AS player_nick, mpd.match_id, heroes.localized_name, "
+                    "coalesce(game_objectives.subtype, 'NO ACTION') "
+                    "from players AS pl "
+                    "left JOIN matches_players_details AS mpd ON mpd.player_id = pl.id "
+                    "left JOIN heroes ON heroes.id = mpd.hero_id "
+                    "left JOIN game_objectives ON game_objectives.match_player_detail_id_1 = mpd.id "
+                    "where pl.id = " + id +
+                    " ORDER BY mpd.match_id")
+
+    matches = []
+
+    for row in pointer:
+        if not response.contains('player_nick'):
+            response['player_nick'] = row[1]
+
+    current_match = None
+    for match in matches:
+        if match['match_id'] == row[2]:
+            current_match = match['match_id']
+
+    pointer.close()
+    return json.dumps(player_dic)
+
+
+
+@app.route('/v2/players/<string:id>/abilities/', methods=['GET'])
+def v2_abilities(id):
+    conn = establish_connection()
+    pointer = conn.cursor()
+
+    result = {}
+    result['id'] = int(id)
+    pointer.execute(
+                    "SELECT p.id, COALESCE(p.nick, 'unknown') AS player_nick, "
+                    "mpd.match_id, heroes.localized_name, "
+                    "abilities.name, au.level "
+                    "FROM players AS p "
+                    "LEFT JOIN matches_players_details AS mpd ON mpd.player_id = p.id "
+                    "LEFT JOIN heroes ON heroes.id = mpd.hero_id "
+                    "LEFT JOIN ability_upgrades AS au ON au.match_player_detail_id = mpd.id "
+                    "LEFT JOIN abilities ON abilities.id = au.ability_id "
+                    "WHERE p.id = " + id +
+                    " ORDER BY mpd.match_id, abilities.name, au.level "
+                    )
+
+    matches = []
+    for row in pointer:
+        if not 'player_nick' in result.keys():
+            result['player_nick'] = row[1]
+
+        current_match = None
+        for match in matches:
+            if match['match_id'] == row[2]:
+                current_match = match
+                break
+
+        if current_match is not None:
+            current_ability = None
+            for ability in current_match['abilities']:
+                if ability['ability_name'] == row[4]:
+                    current_ability = ability
+                    break
+
+            if current_ability is not None:
+                current_ability['upgrade_level'] = row[5]
+                current_ability['count'] += 1
+
+            else:
+                current_ability = {}
+                current_ability['ability_name'] = row[4]
+                current_ability['upgrade_level'] = row[5]
+                current_ability['count'] = 1
+                current_match['abilities'].append(current_ability)
+
+        else:
+            current_match = {}
+            current_match['match_id'] = row[2]
+            current_match['hero_localized_name'] = row[3]
+            matches.append(current_match)
+            current_match['abilities'] = []
+
+            ability = {}
+            ability['ability_name'] = row[4]
+            ability['count'] = 1
+            ability['upgrade_level'] = row[5]
+            current_match['abilities'].append(ability)
+
+    result['matches'] = matches
+    pointer.close()
+    return json.dumps(result)
+
+
+
+
 
 
 @app.route('/hello', methods=['POST'])
