@@ -64,18 +64,19 @@ def v2_patches():
     conn = establish_connection()
     pointer = conn.cursor()
 
-    pointer.execute("SELECT all_paches.patch_version, all_paches.patch_start_date, all_paches.patch_end_date, matches.id AS match_id, duration "
+    pointer.execute(
+                    "SELECT all_matches.match_id, round (all_matches.duration/60.0, 2) AS duration, patches.name AS patch_version, "
+                    "cast (extract(epoch FROM patches.release_date) AS INT) AS patch_start_date, "
+                    "cast (extract (epoch FROM next_patch.release_date) AS INT) AS patch_end_date "
+                    "FROM patches "
+                    "left JOIN patches AS next_patch ON patches.id = next_patch.id  - 1 "
+                    "left JOIN ( "
+                    "SELECT matches.id AS match_id, duration, start_time "
                     "FROM matches "
-                    "LEFT JOIN( "
-                    "SELECT p1.name as patch_version, "
-                    "extract(EPOCH from p1.release_date) as patch_start_date, "
-                    "extract(EPOCH from p2.release_date) as patch_end_date "
-                    "FROM patches as p1 "
-                    "LEFT JOIN patches as p2 "
-                    "ON p1.id = p2.id - 1 "
-                    "ORDER BY p1.id "
-                    ") AS all_paches "
-                    "ON matches.start_time > all_paches.patch_start_date AND matches.start_time < COALESCE(all_paches.patch_end_date, 9999999999)")
+                    ") AS all_matches ON (all_matches.start_time > extract(epoch FROM patches.release_date) "
+                    "and all_matches.start_time < coalesce (extract (epoch FROM next_patch.release_date) , 9999999999)) "
+                    "ORDER BY patches.id"
+                    )
 
     response = {}
     response['patches'] = []
@@ -83,27 +84,29 @@ def v2_patches():
     for row in pointer:
         current_patch = None
         for patch in response['patches']:
-            if patch['patch_version'] == str(row[0]):
+            if patch['patch_version'] == str(row[2]):
                 current_patch = patch
                 break
 
         if current_patch is not None:
             match = {}
-            match['match_id'] = row[3]
-            match['duration'] = row[4]
+            match['match_id'] = row[0]
+            match['duration'] = float(row[1])
             current_patch['matches'].append(match)
 
         else:
             current_patch = {}
-            current_patch['patch_version'] = row[0]
-            current_patch['patch_start_date'] = row[1]
-            current_patch['patch_end_date'] = row[2]
+            current_patch['patch_version'] = row[2]
+            current_patch['patch_start_date'] = row[3]
+            current_patch['patch_end_date'] = row[4]
             current_patch['matches'] = []
 
-            match = {}
-            match['match_id'] = row[3]
-            match['duration'] = row[4]
-            current_patch['matches'].append(match)
+            if row[0] is not None:
+                match = {}
+                match['match_id'] = row[0]
+                match['duration'] = float(row[1])
+                current_patch['matches'].append(match)
+
             response['patches'].append(current_patch)
 
     return json.dumps(response)
@@ -114,9 +117,12 @@ def v2_game_exp(id):
     conn = establish_connection()
     pointer = conn.cursor()
 
+    pointer.execute("SELECT COALESCE(nick, 'nick') "
+                    "FROM players "
+                    "WHERE id = " + id)
     player_dic = {}
-    player_dic['id'] = int
-
+    player_dic['id'] = int(id)
+    player_dic['player_nick'] = pointer.fetchone()[0]
 
     pointer.execute("SELECT p.id, "
                     "COALESCE(p.nick,'unknown') AS player_nick, "
