@@ -263,7 +263,7 @@ def v2_abilities(id):
 
 
 @app.route('/v3/matches/<string:match_id>/top_purchases/', methods=['GET'])
-def v3_top_purchases(id):
+def v3_top_purchases(match_id):
     conn = establish_connection()
     pointer = conn.cursor()
 
@@ -294,6 +294,43 @@ def v3_top_purchases(id):
 
     pointer.close()
     return json.dumps(player_dic)
+
+
+@app.route('/v3/statistics/tower_kills/', methods=['GET'])
+def v3_top_purchases():
+    conn = establish_connection()
+    pointer = conn.cursor()
+
+    pointer.execute(
+                    "SELECT name, match_id, count from(select distinct  on (name) name , count(*) , match_id from( "
+                    "SELECT match_id, hero_id, localized_name as name, time, subtype, "
+                    "ROW_NUMBER() OVER (PARTITION BY match_id ORDER BY time ) -  "
+                    "ROW_NUMBER() OVER (PARTITION BY match_id, hero_id ORDER BY time) AS sequence "
+                    "FROM matches_players_details "
+                    "JOIN heroes ON hero_id = heroes.id "
+                    "JOIN game_objectives ON matches_players_details.id = match_player_detail_id_1   "
+                    "WHERE subtype = 'CHAT_MESSAGE_TOWER_KILL' "
+                    "GROUP BY hero_id, match_id, localized_name, time, subtype "
+                    "ORDER BY match_id)as query1 "
+                    "group by sequence, name, match_id "
+                    "order by name, count desc)as query2 "
+                    "order by count desc "
+                    )
+
+    matches = []
+
+    for row in pointer:
+        if not response.contains('player_nick'):
+            response['player_nick'] = row[1]
+
+    current_match = None
+    for match in matches:
+        if match['match_id'] == row[2]:
+            current_match = match['match_id']
+
+    pointer.close()
+    return json.dumps(player_dic)
+
 
 
 
