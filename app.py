@@ -310,6 +310,7 @@ def v3_top_purchases(match_id):
             purchases.append(purchase)
 
     result['heroes'] = heroes
+    result['id'] = match_id
     pointer.close()
     return json.dumps(result)
 
