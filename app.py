@@ -332,7 +332,7 @@ def v3_tower_kills():
     "ORDER BY match_id)as query1 "
     "group by sequence, name, match_id "
     "order by name, count desc)as query2 "
-    "order by count desc"
+    "order by count desc "
                     )
 
     kills = []
