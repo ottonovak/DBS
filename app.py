@@ -262,6 +262,40 @@ def v2_abilities(id):
 
 
 
+@app.route('/v3/matches/<string:match_id>/top_purchases/', methods=['GET'])
+def v3_top_purchases(id):
+    conn = establish_connection()
+    pointer = conn.cursor()
+
+    pointer.execute(
+                    "SELECT * FROM (SELECT localized_name, hero_id, item_id, items.name,  "
+                    "COUNT (items.id) AS counter, row_number() over (partition by localized_name ORDER BY count(items.id) DESC, items.name ASC) "
+                    "FROM matches_players_details "
+                    "JOIN heroes ON hero_id = heroes.id "
+                    "JOIN purchase_logs ON match_player_detail_id = matches_players_details.id "
+                    "JOIN items ON item_id = items.id "
+                    "JOIN matches ON matches_players_details.match_id = matches.id "
+                    "WHERE match_id = 21421 AND (player_slot < 100 AND radiant_win = 'True' OR player_slot >= 100 AND radiant_win = 'False') "
+                    "GROUP BY hero_id, localized_name, item_id, items.name "
+                    "ORDER BY hero_id, counter DESC, items.name)AS vypis "
+                    "WHERE row_number < 6 "
+                    )
+
+    matches = []
+
+    for row in pointer:
+        if not response.contains('player_nick'):
+            response['player_nick'] = row[1]
+
+    current_match = None
+    for match in matches:
+        if match['match_id'] == row[2]:
+            current_match = match['match_id']
+
+    pointer.close()
+    return json.dumps(player_dic)
+
+
 
 
 
