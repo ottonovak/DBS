@@ -319,7 +319,7 @@ def v3_top_purchases(match_id):
 def v3_tower_kills():
     conn = establish_connection()
     pointer = conn.cursor()
-
+    result = {}
     pointer.execute(
                     "SELECT name, match_id, count from(select distinct  on (name) name , count(*) , match_id from( "
                     "SELECT match_id, hero_id, localized_name as name, time, subtype, "
@@ -336,20 +336,17 @@ def v3_tower_kills():
                     "order by count desc "
                     )
 
-    matches = []
+    kills = []
     for row in pointer:
-        matchess = {}
-        matchess['match_id'] = row[2]
-        matchess['hero_localized_name'] = row[3]
-        matchess['match_duration_minutes'] = float(row[4])
-        matchess['experiences_gained'] = row[5]
-        matchess['level_gained'] = row[6]
-        matchess['winner'] = row[7]
-        matches.append(matchess)
+        kill = {}
+        kill['id'] = row[1]
+        kill['name'] = row[0]
+        kill['tower_kill'] = row[2]
+        kills.append(kill)
 
-    player_dic['matches'] = matches
+    result['heroes'] = kills
     pointer.close()
-    return json.dumps(player_dic)
+    return json.dumps(result)
 
 
 
