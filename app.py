@@ -326,7 +326,7 @@ def v3_tower_kills():
     "ROW_NUMBER() OVER (PARTITION BY match_id, hero_id ORDER BY time) AS sequence "
     "FROM matches_players_details "
     "JOIN heroes ON hero_id = heroes.id "
-    "JOIN game_objectives ON matches_players_details.id = match_player_detail_id_1   ""
+    "JOIN game_objectives ON matches_players_details.id = match_player_detail_id_1   "
     "WHERE subtype = 'CHAT_MESSAGE_TOWER_KILL' "
     "GROUP BY hero_id, match_id, localized_name, time, subtype "
     "ORDER BY match_id)as query1 "
