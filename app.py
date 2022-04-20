@@ -330,7 +330,7 @@ def v3_tower_kills():
                     "WHERE subtype = 'CHAT_MESSAGE_TOWER_KILL' "
                     "GROUP BY hero_id, match_id, localized_name, time, subtype "
                     "ORDER BY match_id)as query1 "
-                    "group by sequence, name, hero_id, match_id "
+                    "group by sequence, name, match_id "
                     "order by hero_id, count desc)as query2 "
                     "order by count desc "
                     )
