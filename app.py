@@ -266,7 +266,7 @@ def v2_abilities(id):
 def v3_top_purchases(match_id):
     conn = establish_connection()
     pointer = conn.cursor()
-
+    result = {}
     pointer.execute(
                     "SELECT * FROM (SELECT localized_name, hero_id, item_id, items.name,  "
                     "COUNT (items.id) AS counter, row_number() over (partition by localized_name ORDER BY count(items.id) DESC, items.name ASC) "
@@ -275,29 +275,47 @@ def v3_top_purchases(match_id):
                     "JOIN purchase_logs ON match_player_detail_id = matches_players_details.id "
                     "JOIN items ON item_id = items.id "
                     "JOIN matches ON matches_players_details.match_id = matches.id "
-                    "WHERE match_id = 21421 AND (player_slot < 100 AND radiant_win = 'True' OR player_slot >= 100 AND radiant_win = 'False') "
+                    "WHERE match_id = " + match_id + " AND (player_slot < 100 AND radiant_win = 'True' OR player_slot >= 100 AND radiant_win = 'False') "
                     "GROUP BY hero_id, localized_name, item_id, items.name "
                     "ORDER BY hero_id, counter DESC, items.name)AS vypis "
                     "WHERE row_number < 6 "
                     )
 
-    matches = []
-
+    heroes = []
     for row in pointer:
-        if not response.contains('player_nick'):
-            response['player_nick'] = row[1]
+        current_hero = None
+        for hero in heroes:
+            if hero['id'] == row[1]:
+                current_hero = hero
 
-    current_match = None
-    for match in matches:
-        if match['match_id'] == row[2]:
-            current_match = match['match_id']
+        if current_hero is None:
+            current_hero = {}
+            current_hero['id'] = row[1]
+            current_hero['name'] = row[0]
+            purchases = []
+            purchase = {}
+            purchase['id'] = row[2]
+            purchase['name'] = row[3]
+            purchase['count'] = row[4]
+            purchases.append(purchase)
 
+            current_hero['top_purchases'] = purchases
+            heroes.append(current_hero)
+        else:
+            purchases = current_hero['top_purchases']
+            purchase = {}
+            purchase['id'] = row[2]
+            purchase['name'] = row[3]
+            purchase['count'] = row[4]
+            purchases.append(purchase)
+
+    result['heroes'] = heroes
     pointer.close()
-    return json.dumps(player_dic)
+    return json.dumps(result)
 
 
 @app.route('/v3/statistics/tower_kills/', methods=['GET'])
-def v3_top_purchases():
+def v3_tower_kills():
     conn = establish_connection()
     pointer = conn.cursor()
 
@@ -318,16 +336,17 @@ def v3_top_purchases():
                     )
 
     matches = []
-
     for row in pointer:
-        if not response.contains('player_nick'):
-            response['player_nick'] = row[1]
+        matchess = {}
+        matchess['match_id'] = row[2]
+        matchess['hero_localized_name'] = row[3]
+        matchess['match_duration_minutes'] = float(row[4])
+        matchess['experiences_gained'] = row[5]
+        matchess['level_gained'] = row[6]
+        matchess['winner'] = row[7]
+        matches.append(matchess)
 
-    current_match = None
-    for match in matches:
-        if match['match_id'] == row[2]:
-            current_match = match['match_id']
-
+    player_dic['matches'] = matches
     pointer.close()
     return json.dumps(player_dic)
 
