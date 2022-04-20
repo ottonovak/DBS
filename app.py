@@ -320,19 +320,19 @@ def v3_tower_kills():
     conn = establish_connection()
     pointer = conn.cursor()
     result = {}
-    pointer.execute("SELECT name, hero_id, count from(select distinct  on (name) name , count(*) , match_id, hero_id from( "
-                    "SELECT match_id, hero_id, localized_name as name, time, subtype, "
-                    "ROW_NUMBER() OVER (PARTITION BY match_id ORDER BY time ) -  "
-                    "ROW_NUMBER() OVER (PARTITION BY match_id, hero_id ORDER BY time) AS sequence "
-                    "FROM matches_players_details "
-                    "JOIN heroes ON hero_id = heroes.id "
-                    "JOIN game_objectives ON matches_players_details.id = match_player_detail_id_1   "
-                    "WHERE subtype = 'CHAT_MESSAGE_TOWER_KILL' "
-                    "GROUP BY hero_id, match_id, localized_name, time, subtype "
-                    "ORDER BY match_id)as query1 "
-                    "group by sequence, name, match_id "
-                    "order by hero_id, count desc)as query2 "
-                    "order by count desc "
+    pointer.execute("SELECT name, match_id, count from(select distinct  on (name) name , count(*) , match_id from( "
+    "SELECT match_id, hero_id, localized_name as name, time, subtype, "
+    "ROW_NUMBER() OVER (PARTITION BY match_id ORDER BY time ) -  "
+    "ROW_NUMBER() OVER (PARTITION BY match_id, hero_id ORDER BY time) AS sequence "
+    "FROM matches_players_details "
+    "JOIN heroes ON hero_id = heroes.id "
+    "JOIN game_objectives ON matches_players_details.id = match_player_detail_id_1   ""
+    "WHERE subtype = 'CHAT_MESSAGE_TOWER_KILL' "
+    "GROUP BY hero_id, match_id, localized_name, time, subtype "
+    "ORDER BY match_id)as query1 "
+    "group by sequence, name, match_id "
+    "order by name, count desc)as query2 "
+    "order by count desc"
                     )
 
     kills = []
