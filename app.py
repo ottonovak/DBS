@@ -16,7 +16,9 @@ app = Flask(__name__)
 Base = declarative_base()
 metadata = Base.metadata
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + os.getenv('DBUSER') + ':' + os.getenv('DBSPASS') + '@147.175.150.216/dota2'
+alchemy_env = dotenv_values("/home/en_var.env")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + alchemy_env['DBUSER'] + ':' + alchemy_env['DBPASS'] + '@147.175.150.216/dota2'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + os.getenv('DBUSER') + ':' + os.getenv('DBSPASS') + '@147.175.150.216/dota2'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
