@@ -25,21 +25,21 @@ db = SQLAlchemy(app)
 
 
 class Ability(db.Model):
-    _tablename_ = 'abilities'
+    __tablename__ = 'abilities'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
 
 
 class AuthGroup(db.Model):
-    _tablename_ = 'auth_group'
+    __tablename__ = 'auth_group'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('auth_group_id_seq'::regclass)"))
     name = db.Column(db.String(150), nullable=False, unique=True)
 
 
 class AuthUser(db.Model):
-    _tablename_ = 'auth_user'
+    __tablename__ = 'auth_user'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('auth_user_id_seq'::regclass)"))
     password = db.Column(db.String(128), nullable=False)
@@ -55,15 +55,15 @@ class AuthUser(db.Model):
 
 
 class ClusterRegion(db.Model):
-    _tablename_ = 'cluster_regions'
+    __tablename__ = 'cluster_regions'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
 
 
 class DjangoContentType(db.Model):
-    _tablename_ = 'django_content_type'
-    _table_args_ = (
+    __tablename__ = 'django_content_type'
+    __table_args__ = (
         UniqueConstraint('app_label', 'model'),
     )
 
@@ -73,7 +73,7 @@ class DjangoContentType(db.Model):
 
 
 class DjangoMigration(db.Model):
-    _tablename_ = 'django_migrations'
+    __tablename__ = 'django_migrations'
 
     id = db.Column(db.BigInteger, primary_key=True, server_default=text("nextval('django_migrations_id_seq'::regclass)"))
     app = db.Column(db.String(255), nullable=False)
@@ -82,7 +82,7 @@ class DjangoMigration(db.Model):
 
 
 class DjangoSession(db.Model):
-    _tablename_ = 'django_session'
+    __tablename__ = 'django_session'
 
     session_key = db.Column(db.String(40), primary_key=True, index=True)
     session_data = db.Column(db.Text, nullable=False)
@@ -90,7 +90,7 @@ class DjangoSession(db.Model):
 
 
 class Hero(db.Model):
-    _tablename_ = 'heroes'
+    __tablename__ = 'heroes'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
@@ -98,14 +98,14 @@ class Hero(db.Model):
 
 
 class Item(db.Model):
-    _tablename_ = 'items'
+    __tablename__ = 'items'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
 
 
 class Patch(db.Model):
-    _tablename_ = 'patches'
+    __tablename__ = 'patches'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('patches_id_seq'::regclass)"))
     name = db.Column(db.Text, nullable=False)
@@ -113,7 +113,7 @@ class Patch(db.Model):
 
 
 class Player(db.Model):
-    _tablename_ = 'players'
+    __tablename__ = 'players'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
@@ -121,8 +121,8 @@ class Player(db.Model):
 
 
 class AuthPermission(db.Model):
-    _tablename_ = 'auth_permission'
-    _table_args_ = (
+    __tablename__ = 'auth_permission'
+    __table_args__ = (
         UniqueConstraint('content_type_id', 'codename'),
     )
 
@@ -135,8 +135,8 @@ class AuthPermission(db.Model):
 
 
 class AuthUserGroup(db.Model):
-    _tablename_ = 'auth_user_groups'
-    _table_args_ = (
+    __tablename__ = 'auth_user_groups'
+    __table_args__ = (
         UniqueConstraint('user_id', 'group_id'),
     )
 
@@ -149,8 +149,8 @@ class AuthUserGroup(db.Model):
 
 
 class DjangoAdminLog(db.Model):
-    _tablename_ = 'django_admin_log'
-    _table_args_ = (
+    __tablename__ = 'django_admin_log'
+    __table_args__ = (
         CheckConstraint('action_flag >= 0'),
     )
 
@@ -168,7 +168,7 @@ class DjangoAdminLog(db.Model):
 
 
 class Match(db.Model):
-    _tablename_ = 'matches'
+    __tablename__ = 'matches'
 
     id = db.Column(db.Integer, primary_key=True)
     cluster_region_id = db.Column(db.ForeignKey('cluster_regions.id'))
@@ -188,7 +188,7 @@ class Match(db.Model):
 
 
 class PlayerRating(db.Model):
-    _tablename_ = 'player_ratings'
+    __tablename__ = 'player_ratings'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('player_ratings_id_seq'::regclass)"))
     player_id = db.Column(db.ForeignKey('players.id'))
@@ -201,8 +201,8 @@ class PlayerRating(db.Model):
 
 
 class AuthGroupPermission(db.Model):
-    _tablename_ = 'auth_group_permissions'
-    _table_args_ = (
+    __tablename__ = 'auth_group_permissions'
+    __table_args__ = (
         UniqueConstraint('group_id', 'permission_id'),
     )
 
@@ -215,8 +215,8 @@ class AuthGroupPermission(db.Model):
 
 
 class AuthUserUserPermission(db.Model):
-    _tablename_ = 'auth_user_user_permissions'
-    _table_args_ = (
+    __tablename__ = 'auth_user_user_permissions'
+    __table_args__ = (
         UniqueConstraint('user_id', 'permission_id'),
     )
 
@@ -229,8 +229,8 @@ class AuthUserUserPermission(db.Model):
 
 
 class MatchesPlayersDetail(db.Model):
-    _tablename_ = 'matches_players_details'
-    _table_args_ = (
+    __tablename__ = 'matches_players_details'
+    __table_args__ = (
         Index('idx_match_id_player_id', 'match_id', 'player_slot', 'id'),
     )
 
@@ -286,8 +286,8 @@ class MatchesPlayersDetail(db.Model):
 
 
 class Teamfight(db.Model):
-    _tablename_ = 'teamfights'
-    _table_args_ = (
+    __tablename__ = 'teamfights'
+    __table_args__ = (
         Index('teamfights_match_id_start_teamfight_id_idx', 'match_id', 'start_teamfight', 'id'),
     )
 
@@ -302,7 +302,7 @@ class Teamfight(db.Model):
 
 
 class AbilityUpgrade(db.Model):
-    _tablename_ = 'ability_upgrades'
+    __tablename__ = 'ability_upgrades'
 
     id = db.Column(Integer, primary_key=True, server_default=text("nextval('ability_upgrades_id_seq'::regclass)"))
     ability_id = db.Column(db.ForeignKey('abilities.id'))
@@ -315,7 +315,7 @@ class AbilityUpgrade(db.Model):
 
 
 class Chat(db.Model):
-    _tablename_ = 'chats'
+    __tablename__ = 'chats'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('chats_id_seq'::regclass)"))
     match_player_detail_id = db.Column(db.ForeignKey('matches_players_details.id'))
@@ -327,7 +327,7 @@ class Chat(db.Model):
 
 
 class GameObjective(db.Model):
-    _tablename_ = 'game_objectives'
+    __tablename__ = 'game_objectives'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('game_objectives_id_seq'::regclass)"))
     match_player_detail_id_1 = db.Column(db.ForeignKey('matches_players_details.id'))
@@ -344,7 +344,7 @@ class GameObjective(db.Model):
 
 
 class PlayerAction(db.Model):
-    _tablename_ = 'player_actions'
+    __tablename__ = 'player_actions'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('player_actions_id_seq'::regclass)"))
     unit_order_none = db.Column(db.Integer)
@@ -381,7 +381,7 @@ class PlayerAction(db.Model):
 
 
 class PlayerTime(db.Model):
-    _tablename_ = 'player_times'
+    __tablename__ = 'player_times'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('player_times_id_seq'::regclass)"))
     match_player_detail_id = db.Column(ForeignKey('matches_players_details.id'))
@@ -394,7 +394,7 @@ class PlayerTime(db.Model):
 
 
 class PurchaseLog(db.Model):
-    _tablename_ = 'purchase_logs'
+    __tablename__ = 'purchase_logs'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('purchase_logs_id_seq'::regclass)"))
     match_player_detail_id = db.Column(db.ForeignKey('matches_players_details.id'))
@@ -406,7 +406,7 @@ class PurchaseLog(db.Model):
 
 
 class TeamfightsPlayer(db.Model):
-    _tablename_ = 'teamfights_players'
+    __tablename__ = 'teamfights_players'
 
     id = db.Column(db.Integer, primary_key=True, server_default=text("nextval('teamfights_players_id_seq'::regclass)"))
     teamfight_id = db.Column(db.ForeignKey('teamfights.id'))
